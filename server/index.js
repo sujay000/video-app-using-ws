@@ -20,18 +20,16 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('callEnded')
     })
 
-    socket.on('callOther', ({ textInputID, data }) => {
-        console.log(data)
-        console.log(textInputID)
+    socket.on('callOther', ({ textInput: textInputID, data }) => {
         io.to(textInputID).emit('callIncoming', {
             id: socket.id, // call initiator's id
             data: data,
         })
     })
 
-    // socket.on('acceptedTheCall', (data) => {
-    //     socket.broadcast.emit('heAccepted', data)
-    // })
+    socket.on('acceptedTheCall', (data) => {
+        socket.broadcast.emit('heAccepted', data)
+    })
 })
 
 server.listen(port, () => {

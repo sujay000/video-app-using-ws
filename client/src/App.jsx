@@ -49,14 +49,15 @@ function App() {
             hisVideo.current.srcObject = stream
         })
 
-        // socket.on('heAccepted', (data) => {
-        //     setHisSignallingData(data)
-        //     peer.signal(data)
-        // })
-
         peer.on('signal', (data) => {
+            console.log(textInput)
             console.log(data)
             socket.emit('callOther', { textInput: textInput, data: data })
+        })
+
+        socket.on('heAccepted', (data) => {
+            setHisSignallingData(data)
+            peer.signal(data)
         })
     }
 
@@ -67,7 +68,7 @@ function App() {
     function handleAnswer() {
         console.log(`call accepted`)
         const peer = new Peer({
-            initiator: true,
+            initiator: false,
             trickle: false,
             stream: stream,
         })
@@ -76,9 +77,9 @@ function App() {
             hisVideo.current.srcObject = stream
         })
 
-        // peer.on('signal', (data) => {
-        //     socket.emit('acceptedTheCall', data)
-        // })
+        peer.on('signal', (data) => {
+            socket.emit('acceptedTheCall', data)
+        })
 
         peer.signal(hisSignallingData)
     }
@@ -91,7 +92,7 @@ function App() {
             <br />
             <video playsInline muted ref={myVideo} autoPlay style={{ width: '200px' }} />
             <br />
-            <video playsInline muted ref={hisVideo} autoPlay style={{ width: '200px' }} />
+            <video playsInline ref={hisVideo} autoPlay style={{ width: '200px' }} />
             <br />
             <button onClick={handleStart}> start my video and audio</button>
             <br />
