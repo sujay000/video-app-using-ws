@@ -21,8 +21,7 @@ function App() {
         socket.on('me', (data) => {
             setMyID(data)
         })
-        socket.on('callIncoming', ({ his_ID, data }) => {
-            console.log(`call incoming heard from BE`)
+        socket.on('callIncoming', ({ id: his_ID, data }) => {
             setIsCallIncoming(true)
             setHisID(his_ID)
             setHisSignallingData(data)
@@ -40,8 +39,8 @@ function App() {
     async function handleCallUser() {
         console.log(`handle callUser called`)
         const peer = new Peer({
-            initiator: true,
-            trickle: false,
+            initiator: true, // peer1
+            trickle: false, // calls the 'signal' event only once
             stream: stream,
         })
 
@@ -78,7 +77,8 @@ function App() {
         })
 
         peer.on('signal', (data) => {
-            socket.emit('acceptedTheCall', data)
+            console.log(`his id peer on signal ${hisID}`)
+            socket.emit('acceptedTheCall', { hisID, data })
         })
 
         peer.signal(hisSignallingData)
@@ -101,8 +101,6 @@ function App() {
             <input
                 onChange={(e) => {
                     setTextInput(e.target.value)
-                    console.log('Input value:', e.target.value)
-                    console.log('Current textInput state:', textInput)
                 }}
                 value={textInput}
             />
